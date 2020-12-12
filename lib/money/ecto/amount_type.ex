@@ -67,7 +67,8 @@ if Code.ensure_loaded?(Ecto.Type) do
 
     @spec load(Decimal.t() | integer()) :: {:ok, Money.t()}
     def load(int) when is_integer(int), do: {:ok, Money.new(int)}
-    def load(%Decimal{} = dec), do: Money.parse(dec)
+    # Note that this is because Cockroach always convert the number as Decimal
+    def load(%Decimal{} = dec), do: Decimal.div(dec, 100) |> Money.parse()
 
     @spec dump(integer() | Money.t()) :: {:ok, integer()}
     def dump(int) when is_integer(int), do: {:ok, int}
